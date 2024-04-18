@@ -32,31 +32,13 @@
 $ yarn install
 ```
 
-## Running the app
+## Running the app (Make sure docker daemon is running)
 
 ```bash
-# development
-$ yarn run start
-
-# watch mode
-$ yarn run start:dev
-
-# production mode
-$ yarn run start:prod
+$ sh start.sh
 ```
 
-## Test
-
-```bash
-# unit tests
-$ yarn run test
-
-# e2e tests
-$ yarn run test:e2e
-
-# test coverage
-$ yarn run test:cov
-```
+## The app running on localhost:3000
 
 ## Support
 
