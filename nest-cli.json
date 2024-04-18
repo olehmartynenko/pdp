@@ -1,0 +1,50 @@
+{
+  "$schema": "https://json.schemastore.org/nest-cli",
+  "collection": "@nestjs/schematics",
+  "sourceRoot": "apps/pdp/src",
+  "compilerOptions": {
+    "deleteOutDir": true,
+    "webpack": true,
+    "tsConfigPath": "apps/pdp/tsconfig.app.json"
+  },
+  "projects": {
+    "common": {
+      "type": "library",
+      "root": "libs/common",
+      "entryFile": "index",
+      "sourceRoot": "libs/common/src",
+      "compilerOptions": {
+        "tsConfigPath": "libs/common/tsconfig.lib.json"
+      }
+    },
+    "pdp": {
+      "type": "application",
+      "root": "apps/pdp",
+      "entryFile": "main",
+      "sourceRoot": "apps/pdp/src",
+      "compilerOptions": {
+        "tsConfigPath": "apps/pdp/tsconfig.app.json"
+      }
+    },
+    "base-entities": {
+      "type": "application",
+      "root": "apps/base-entities",
+      "entryFile": "main",
+      "sourceRoot": "apps/base-entities/src",
+      "compilerOptions": {
+        "tsConfigPath": "apps/base-entities/tsconfig.app.json"
+      }
+    },
+    "grades": {
+      "type": "application",
+      "root": "apps/grades",
+      "entryFile": "main",
+      "sourceRoot": "apps/grades/src",
+      "compilerOptions": {
+        "tsConfigPath": "apps/grades/tsconfig.app.json"
+      }
+    }
+  },
+  "monorepo": true,
+  "root": "apps/pdp"
+}

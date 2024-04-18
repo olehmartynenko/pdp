@@ -1,0 +1,106 @@
+version: '3.8'
+services:
+  dev-db:
+    image: postgres:13
+    container_name: pdp-dev-db
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB}
+    restart: 'always'
+    ports:
+      - '5432:5432'
+    networks:
+      - pdp_network
+    volumes:
+      - db_data:/db
+
+  redis:
+    image: redis/redis-stack-server:latest
+    container_name: pdp-redis
+    restart: 'always'
+    ports:
+      - '6379:6379'
+    networks:
+      - pdp_network
+    volumes:
+      - type: tmpfs
+        target: /cache/data
+
+  rabbitmq:
+    image: rabbitmq:3-management
+    container_name: pdp-rabbitmq
+    restart: 'always'
+    ports:
+      - '5672:5672'
+      - '15672:15672'
+    healthcheck:
+      test: rabbitmq-diagnostics check_port_connectivity
+      interval: 7s
+      timeout: 10s
+      retries: 5
+    networks:
+      - pdp_network
+
+  pdp:
+    build:
+      context: ./
+      dockerfile: ./apps/pdp/Dockerfile
+    ports:
+      - '3000:3000'
+    env_file:
+      - .env
+    depends_on:
+      base-entities:
+        condition: service_started
+      grades:
+        condition: service_started
+    networks:
+      - pdp_network
+
+  base-entities:
+    build:
+      context: ./
+      dockerfile: ./apps/base-entities/Dockerfile
+    ports:
+      - '3001:3001'
+    env_file:
+      - .env
+    depends_on:
+      rabbitmq:
+        condition: service_healthy
+      dev-db:
+        condition: service_started
+      redis:
+        condition: service_started
+    command: yarn start:dev base-entities
+    networks:
+      - pdp_network
+
+  grades:
+    build:
+      context: ./
+      dockerfile: ./apps/grades/Dockerfile
+    restart: 'on-failure'
+    ports:
+      - '3002:3002'
+    env_file:
+      - .env
+    depends_on:
+      rabbitmq:
+        condition: service_healthy
+      dev-db:
+        condition: service_started
+      redis:
+        condition: service_started
+    command: yarn start:dev grades
+    networks:
+      - pdp_network
+
+networks:
+  pdp_network:
+    name: pdp_network
+
+volumes:
+  db_data:
+    name: db_data

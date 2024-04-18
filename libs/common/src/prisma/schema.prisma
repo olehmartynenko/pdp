@@ -1,0 +1,64 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Class {
+  id  Int @id @default(autoincrement())
+  name  String  @unique
+  students Student[]
+  teacher Teacher?
+  subjects Subject[]
+}
+
+model Student {
+  id  Int @id @default(autoincrement())
+  fullName  String  @unique
+  class Class? @relation(fields: [classId], references: [id]) 
+  classId Int?
+  grades  Grade[]
+
+  @@unique([fullName, classId])
+}
+
+model Teacher {
+  id  Int @id @default(autoincrement())
+  fullName  String
+  class Class? @relation(fields: [classId], references: [id])
+  classId Int? @unique
+  subjects Subject[]
+
+  @@unique([fullName, classId])
+}
+
+model Subject {
+  id  Int @id @default(autoincrement())
+  name  String
+  class Class? @relation(fields: [classId], references: [id])
+  classId Int? 
+  teacher Teacher? @relation(fields: [teacherId], references: [id])
+  teacherId Int?
+  grades  Grade[]
+
+  @@unique([name, classId, teacherId])
+}
+
+model Grade {
+  id  Int @id @default(autoincrement())
+  value Int
+  student Student @relation(fields: [studentId], references: [id])
+  studentId Int
+  subject Subject @relation(fields: [subjectId], references: [id])
+  subjectId Int
+  createdAt DateTime @default(now())
+}
