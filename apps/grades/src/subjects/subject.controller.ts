@@ -44,7 +44,7 @@ export class SubjectController {
   @MessagePattern({ cmd: 'assign-subject-to-class' })
   async assignSubjectToClass(
     @Ctx() context: RmqContext,
-    @Payload() data: AssignSubjectToClassDto,
+    @Payload() data: { subjectId: number; classId: number },
   ): Promise<SubjectDto | Error> {
     this.brokerService.acknowledgeMessage(context);
 
@@ -54,7 +54,7 @@ export class SubjectController {
   @MessagePattern({ cmd: 'assign-subject-to-teacher' })
   async assignSubjectToTeacher(
     @Ctx() context: RmqContext,
-    @Payload() data: AssignSubjectToTeacherDto,
+    @Payload() data: { subjectId: number; teacherId: number },
   ): Promise<SubjectDto | Error> {
     this.brokerService.acknowledgeMessage(context);
 
